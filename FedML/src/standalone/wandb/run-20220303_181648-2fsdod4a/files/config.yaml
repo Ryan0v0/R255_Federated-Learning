@@ -1,0 +1,126 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.12.11
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.8.8
+    start_time: 1646327808
+    t:
+      1:
+      - 1
+      - 5
+      - 41
+      2:
+      - 1
+      - 5
+      - 41
+      3:
+      - 13
+      - 16
+      4: 3.8.8
+      5: 0.12.11
+      8:
+      - 5
+agg_weight:
+  desc: null
+  value: 0.15
+alpha:
+  desc: null
+  value: 10
+batch_size:
+  desc: null
+  value: 10
+ci:
+  desc: null
+  value: 0
+client_num_in_total:
+  desc: null
+  value: 49
+client_num_per_round:
+  desc: null
+  value: 5
+client_optimizer:
+  desc: null
+  value: sgd
+comm_round:
+  desc: null
+  value: 200
+data_dir:
+  desc: null
+  value: /var/folders/2t/7yjrxzj16lq2084mvs3nldjh0000gn/T/data.kSB1XtHB
+dataset:
+  desc: null
+  value: mnist
+epochs:
+  desc: null
+  value: 1
+free_rider_num:
+  desc: null
+  value: 0
+free_rider_strategy:
+  desc: null
+  value: delta
+freerider:
+  desc: null
+  value: false
+frequency_of_the_test:
+  desc: null
+  value: 5
+gamma:
+  desc: null
+  value: 0.5
+ghost_num:
+  desc: null
+  value: 0
+gpu:
+  desc: null
+  value: 0
+inflated_client_num:
+  desc: null
+  value: 0
+inflator:
+  desc: null
+  value: random
+lr:
+  desc: null
+  value: 0.001
+max_gap:
+  desc: null
+  value: 1.0
+max_mag:
+  desc: null
+  value: 1.0
+method:
+  desc: null
+  value: FedProf
+min_mag:
+  desc: null
+  value: 1.0
+model:
+  desc: null
+  value: nn
+overstate:
+  desc: null
+  value: false
+partition_alpha:
+  desc: null
+  value: 0.5
+partition_method:
+  desc: null
+  value: hetero
+remove:
+  desc: null
+  value: false
+use_reputation:
+  desc: null
+  value: false
+use_sparsify:
+  desc: null
+  value: false
+wd:
+  desc: null
+  value: 0.001

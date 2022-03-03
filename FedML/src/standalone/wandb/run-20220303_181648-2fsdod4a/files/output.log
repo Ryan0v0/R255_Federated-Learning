@@ -1,0 +1,23 @@
+
+INFO:root:load_data. dataset_name = mnist
+INFO:root:loading data...
+INFO:root:finished the loading data
+INFO:root:create_model. model_name = nn, output_dim = 10
+INFO:root:MyNet(
+  (fc1): Linear(in_features=784, out_features=1000, bias=True)
+  (fc2): Linear(in_features=1000, out_features=10, bias=True)
+)
+INFO:root:############setup_clients (START)#############
+INFO:root:self.local_sample_number = 290
+INFO:root:self.local_sample_number = 2907
+INFO:root:self.local_sample_number = 3197
+INFO:root:self.local_sample_number = 3488
+INFO:root:self.local_sample_number = 3779
+INFO:root:############setup_clients (END)#############
+INFO:root:################Communication round : 0
+Traceback (most recent call last):
+  File "./main.py", line 149, in <module>
+    fedprofAPI.train()
+  File "/Users/zhaowanru/cam/flower/NAIST-FedML-Experiments/src/standalone/fedprof/fedprof_api.py", line 74, in train
+    self.train_data_local_dict[idx]
+KeyError: 20
