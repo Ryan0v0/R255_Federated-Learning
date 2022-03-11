@@ -169,10 +169,32 @@ class CifarRayClient(fl.client.NumPyClient):
 
         # evaluate
         loss, accuracy = test(self.net, valloader, device=self.device)
+        
+        out = self.net.forward(trainloader.dataset)
+        
+        RP = culc_footprint(out, trainloader)
+        
+        self.properties["RP"] = RP
 
         # return statistics
         return float(loss), len(valloader.dataset), {"accuracy": float(accuracy)}
 
+
+    def culc_footprint(self, local_data, dataloader=True):
+        if dataloader is True:
+            latent_representation = []
+            for batch_idx, (x, labels) in enumerate(local_data):
+                x, labels = x.to(self.device), labels.to(self.device)
+                output = self.out(x)
+                latent_representation.append(output)
+            latent_representation = torch.cat(latent_representation)
+        else:
+            latent_representation = self.out(local_data.to(self.device))
+        
+        u = torch.mean(latent_representation, axis=0)
+        sigma = torch.std(latent_representation, axis=0)
+        footprint = (u, sigma)
+        return footprint
 
 def fit_config(rnd: int) -> Dict[str, str]:
     """Return a configuration with static batch size and (local) epochs."""
