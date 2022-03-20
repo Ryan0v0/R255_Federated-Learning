@@ -143,9 +143,9 @@ class FedProf(FedAvg):
             Initial global model parameters.
         """
         super().__init__()
-        self.true_credibility = true_credibility
-        self.pred_credibility = np.array([0.0] * self.args.client_num_in_total)
+        # self.pred_credibility = np.array([0.0] * self.args.client_num_in_total)
         self.alpha = args.alpha
+        self.beta = args.beta
         self.accept_failures = accept_failures
     
     def __repr__(self) -> str:
@@ -189,22 +189,34 @@ class FedProf(FedAvg):
         self, sample_size: int, client_manager: ClientManager
     ) -> List[ClientProxy]:
         """Sample clients depending on their score from representation."""
+        all_clients: Dict[str, ClientProxy] = client_manager.all()
+        cid_idx: Dict[int, str] = {}
+        raw: List[float] = []
+        cpu_time: List[float] = []
+        for idx, (cid, _) in enumerate(all_clients.items()):
+            cid_idx[idx] = cid
+            cpu_time[idx] = all_clients[idx].get_properties["cpu_time"]
+        cpu_range = np.max(cpu_time) - np.min(cpu_time)
 
+        pred_credibility = np.array([0.0] * len(all_clients.keys()))
+
+        for idx, (cid, _) in enumerate(all_clients.items()):
+            client = all_clients[idx]
+            pred_credibility[cid] = math.e ** (-self.alpha* client.get_properties["kl_div"] - self.beta*((client.get_properties["cpu_time"]-np.min(cpu_time))/cpu_range)
+                                                           
         # Sample clients
         return normalize_and_sample(
             all_clients=all_clients,
             cid_idx=cid_idx,
-            raw=np.array(raw),
             sample_size=sample_size,
-            use_softmax=False,
+            pred_credibility=np.array(pred_credibility)
         )
 
 def normalize_and_sample(
     all_clients: Dict[str, ClientProxy],
     cid_idx: Dict[int, str],
-    raw: np.ndarray,
     sample_size: int,
-    use_softmax: bool = False,
+    pred_credibility: np.ndarray,
 ) -> List[ClientProxy]:
     """Normalize the relative importance and sample clients accordingly.
         
@@ -212,7 +224,7 @@ def normalize_and_sample(
     """
     indices = np.arange(len(all_clients.keys()))
     sampled_indices = np.random.choice(
-        indices, size=sample_size, replace=False, p=self.pred_credibility / np.sum(self.pred_credibility)
+        indices, size=sample_size, replace=False, p=pred_credibility / np.sum(pred_credibility)
     )
     clients = [all_clients[cid_idx[idx]] for idx in sampled_indices]
     return clients

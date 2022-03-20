@@ -95,7 +95,7 @@ class CifarRayClient(fl.client.NumPyClient):
             data = pkl.load(cpkl)
             self.properties: Dict[str, Scalar] = {"tensor_type": "numpy.ndarray", "cpu_time": data['cpu_time']}
         else:
-            self.properties: Dict[str, Scalar] = {"tensor_type": "numpy.ndarray"}
+            self.properties: Dict[str, Scalar] = {"tensor_type": "numpy.ndarray"} # initialization?
 
         # print("construction: self.properties", self.properties)
 
@@ -170,15 +170,16 @@ class CifarRayClient(fl.client.NumPyClient):
         # evaluate
         loss, accuracy = test(self.net, valloader, device=self.device)
         
-        out = self.net.forward(trainloader.dataset)
+        out_train = self.net.forward(trainloader.dataset)
+        RP_k = culc_footprint(out_train, trainloader)
         
-        RP = culc_footprint(out, trainloader)
+        out_val = self.net.forward(valloader.dataset)
+        RP_v = culc_footprint(out_val, valloader)
         
-        self.properties["RP"] = RP
+        self.properties["kl_div"] = kldiv_between_server_and_client(RP_v, RP_k)
 
         # return statistics
         return float(loss), len(valloader.dataset), {"accuracy": float(accuracy)}
-
 
     def culc_footprint(self, local_data, dataloader=True):
         if dataloader is True:
@@ -195,6 +196,13 @@ class CifarRayClient(fl.client.NumPyClient):
         sigma = torch.std(latent_representation, axis=0)
         footprint = (u, sigma)
         return footprint
+
+    def kldiv_between_server_and_client(self, server_footprint, client_footprint):
+        server_u, server_sigma = server_footprint
+        client_u, client_sigma = client_footprint
+        kl = torch.log(server_sigma / client_sigma) + ((client_sigma ** 2) + (client_u - server_u) ** 2) / (2 * (server_sigma ** 2))
+            
+        return torch.mean(kl).item()
 
 def fit_config(rnd: int) -> Dict[str, str]:
     """Return a configuration with static batch size and (local) epochs."""
